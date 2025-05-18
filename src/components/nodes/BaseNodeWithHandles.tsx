@@ -32,52 +32,72 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
       style={combinedStyle}
     >
       {/* 左側 Handle */}
-      <div style={{ 
-        position: 'absolute',
-        top: '50%',
-        left: 0,
-        transform: 'translateY(-50%)',
-        width: 1,
-        height: 1
-      }}>
-        <Handle type="target" position={Position.Left} id="left" />
-      </div>
+      <Handle 
+        type="target" 
+        position={Position.Left} 
+        id="left" 
+        style={{
+          left: -8,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: '#555',
+          width: 12,
+          height: 12,
+          border: '2px solid #fff',
+          zIndex: 100
+        }}
+      />
 
-      {/* 右側 Handle */}
-      <div style={{ 
-        position: 'absolute',
-        top: '50%',
-        right: 0,
-        transform: 'translateY(-50%)',
-        width: 1,
-        height: 1
-      }}>
-        <Handle type="source" position={Position.Right} id="right" />
-      </div>
+      {/* 右側 Handle - 確保它在節點正確的右邊緣 */}
+      <Handle 
+        type="source" 
+        position={Position.Right} 
+        id="right" 
+        style={{
+          right: -8,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: '#555',
+          width: 12,
+          height: 12,
+          border: '2px solid #fff',
+          zIndex: 100
+        }}
+      />
 
       {/* 上側 Handle */}
-      <div style={{ 
-        position: 'absolute',
-        top: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 1,
-        height: 1
-      }}>
-        <Handle type="source" position={Position.Top} id="top" />
-      </div>
+      <Handle 
+        type="source" 
+        position={Position.Top} 
+        id="top" 
+        style={{
+          top: -8,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#555',
+          width: 12,
+          height: 12,
+          border: '2px solid #fff',
+          zIndex: 100
+        }}
+      />
 
       {/* 下側 Handle */}
-      <div style={{ 
-        position: 'absolute',
-        bottom: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 1,
-        height: 1
-      }}>
-        <Handle type="target" position={Position.Bottom} id="bottom" />
-      </div>
+      <Handle 
+        type="target" 
+        position={Position.Bottom} 
+        id="bottom" 
+        style={{
+          bottom: -8,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#555',
+          width: 12,
+          height: 12,
+          border: '2px solid #fff',
+          zIndex: 100
+        }}
+      />
 
       {children}
     </div>

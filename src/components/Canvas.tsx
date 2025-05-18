@@ -12,7 +12,7 @@ import ReactFlow, {
   type OnConnect,
   type Connection
 } from "react-flow-renderer";
-import { nodeTypes } from '../utils/nodeTypes';
+import { nodeTypes, edgeTypes } from '../utils/nodeTypes';
 
 interface CanvasProps {
   nodes: Node[];
@@ -58,6 +58,7 @@ export default function Canvas({
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={onNodesChange}
           onConnect={onConnect}
           fitView

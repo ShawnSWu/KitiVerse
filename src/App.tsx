@@ -3,7 +3,7 @@ import Canvas from "./components/Canvas";
 import { convertToReactFlowGraph, toFlowNode, toFlowEdge } from "./utils/mappingUtils";
 import { readCanvasFile } from "./utils/fileUtils";
 import type { Node, Edge, NodeChange, Connection } from 'react-flow-renderer';
-import { Position, applyNodeChanges, addEdge } from 'react-flow-renderer';
+import { applyNodeChanges, addEdge } from 'react-flow-renderer';
 
 function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -30,7 +30,7 @@ function App() {
           {
             id: 'node1',
             type: 'textNode',
-            position: { x: 50, y: 100 },
+            position: { x: 10, y: 10 },
             data: {
               label: '# 當你透過 kubectl 或其他方式向 Kubernetes API 發送請求（例如創建一個 Pod）時，流程如下：\n\n1. **認證（Authentication）**：確認你是誰。\n2. **授權（Authorization）**：確認你有權限這麼做。\n3. **Admission Control**：在這裡，Admission Controllers 介入，根據啟用的控制器進行驗證或修改。\n4. **持久化**：如果通過上述步驟，請求才會被存入 etcd。'
             },
@@ -58,12 +58,12 @@ function App() {
             id: 'edge1',
             source: 'node1',
             target: 'node2',
-            sourceHandle: Position.Right as Position,
-            targetHandle: Position.Left as Position,  
+            sourceHandle: 'right',
+            targetHandle: 'left',
             style: {
               strokeWidth: 2
             },
-            label: 'Connection between nodes'
+            label: 'Connection between nodesqqqqqqq',
           }
         ];
         

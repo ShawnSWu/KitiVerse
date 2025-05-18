@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import ReactMarkdown from 'react-markdown';
 import BaseNodeWithHandles from "./BaseNodeWithHandles";
+import { useAutoResize } from "../../hooks/useAutoResize";
 
 const markdownComponents = {
   h1: ({node, ...props}: any) => <h1 style={{fontSize: '1.5em', margin: '0.5em 0'}} {...props} />,
@@ -34,17 +35,37 @@ interface TextNodeProps {
 const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   
+  // 設置自適應卡片的極限值
+  const MIN_WIDTH = 150;   // 最小寬度
+  const MIN_HEIGHT = 80;   // 最小高度
+  const MAX_WIDTH = 500;   // 最大寬度
+  const MAX_HEIGHT = 400;  // 最大高度
+  
+  // 使用 useAutoResize hook 來自動調整尺寸
+  const initialWidth = style.width ? Number(style.width) : 200;
+  const initialHeight = 100; // 初始高度
+  const autoSize = useAutoResize(
+    contentRef,    // 內容元素的引用
+    initialWidth,  // 初始寬度
+    initialHeight, // 初始高度
+    MIN_WIDTH,     // 最小寬度
+    MIN_HEIGHT,    // 最小高度
+    MAX_WIDTH,     // 最大寬度
+    MAX_HEIGHT     // 最大高度
+  );
+  
   // 基礎節點樣式
   const nodeStyle = {
-    width: style.width || 200,
-    height: style.height || 'auto',
     backgroundColor: style.backgroundColor || '#344361',
     color: style.color || '#fff',
     padding: '12px',
     borderRadius: '8px',
     boxShadow: selected ? '0 0 0 2px #6366f1' : '0 2px 4px rgba(0,0,0,0.1)',
     transition: 'all 0.2s ease',
-    ...style
+    ...style,
+    // 確保寬高使用自動計算的尺寸
+    width: autoSize.width,
+    height: autoSize.height
   };
 
   // 內容容器樣式
@@ -60,7 +81,11 @@ const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false 
   };
 
   return (
-    <BaseNodeWithHandles style={nodeStyle}>
+    <BaseNodeWithHandles style={{
+      ...nodeStyle,
+      position: 'relative',  // 確保連接點相對於節點定位
+      boxSizing: 'border-box'  // 確保 padding 和 border 包含在元素尺寸內
+    }}>
       <div ref={contentRef} style={contentStyle}>
         <ReactMarkdown 
           components={{
