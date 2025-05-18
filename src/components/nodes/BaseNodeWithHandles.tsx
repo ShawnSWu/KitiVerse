@@ -9,22 +9,27 @@ type BaseNodeWithHandlesProps = {
 const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, style = {} }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
 
+  // 基礎樣式
+  const baseStyle: React.CSSProperties = {
+    position: 'relative',
+    backgroundColor: '#344361',
+    color: '#fff',
+    borderRadius: '8px',
+    padding: '12px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    transition: 'all 0.2s ease',
+  };
+
+  // 合併樣式，確保傳入的樣式可以覆蓋基礎樣式
+  const combinedStyle = {
+    ...baseStyle,
+    ...style
+  };
+
   return (
     <div 
       ref={nodeRef}
-      style={{
-        position: 'relative',
-        width: style.width || 200,
-        minWidth: 100,
-        minHeight: 40,
-        height: style.height || 'auto',
-        backgroundColor: style.backgroundColor || '#344361',
-        borderRadius: style.borderRadius || 8,
-        padding: style.padding || '12px',
-        boxShadow: style.boxShadow || '0 2px 4px rgba(0,0,0,0.1)',
-        transition: 'all 0.2s ease',
-        color: style.color || '#fff'
-      }}
+      style={combinedStyle}
     >
       {/* 左側 Handle */}
       <div style={{ 

@@ -36,20 +36,18 @@ function App() {
             },
             style: {
               width: 200,
-              height: 500,
               backgroundColor: '#344361'
             }
-          },
+          }, 
           {
             id: 'node2',
             type: 'textNode',
-            position: { x: 1000, y: 160 },
+            position: { x: 1000, y: 100 },
             data: {
-              label: '# Title 2\n\nDescription 2\n\n- Feature 1\n- Feature 2\n\n**Important**: Note 2'
+              label: '# 將流量轉發到對應的 Pod\n### KubeProxy 會根據 Service 的要求，將流量轉發到對應的後端的 Pod'
             },
             style: {
-              width: 1200,
-              height: 20,
+              width: 200,
               backgroundColor: '#344361'
             }
           }

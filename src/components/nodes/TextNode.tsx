@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef } from "react";
 import ReactMarkdown from 'react-markdown';
 import BaseNodeWithHandles from "./BaseNodeWithHandles";
 
@@ -31,39 +31,37 @@ interface TextNodeProps {
   selected?: boolean;
 }
 
-const TextNode: React.FC<TextNodeProps> = ({ id, data, style = {}, selected = false }) => {
+const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   
-  // 使用傳入的樣式，如果沒有則使用默認值
+  // 基礎節點樣式
   const nodeStyle = {
     width: style.width || 200,
     height: style.height || 'auto',
+    backgroundColor: style.backgroundColor || '#344361',
+    color: style.color || '#fff',
+    padding: '12px',
+    borderRadius: '8px',
+    boxShadow: selected ? '0 0 0 2px #6366f1' : '0 2px 4px rgba(0,0,0,0.1)',
+    transition: 'all 0.2s ease',
     ...style
   };
 
+  // 內容容器樣式
+  const contentStyle: React.CSSProperties = {
+    width: '100%',
+    minHeight: '100%',
+    overflow: 'hidden',
+    wordBreak: 'break-word' as const,
+    lineHeight: 1.6,
+    padding: '10px',
+    boxSizing: 'border-box',
+    color: style.color || (style.backgroundColor === '#FFFFFF' ? '#000' : '#fff')
+  };
+
   return (
-    <BaseNodeWithHandles 
-      style={{
-        ...nodeStyle,
-        padding: '12px',
-        borderRadius: '8px',
-        boxShadow: selected ? '0 0 0 2px #6366f1' : '0 2px 4px rgba(0,0,0,0.1)',
-        transition: 'all 0.2s ease',
-      }}
-    >
-      <div
-        ref={contentRef}
-        style={{
-          color: style?.backgroundColor === '#FFFFFF' ? '#000' : '#fff',
-          width: '100%',
-          minHeight: '100%',
-          overflow: 'hidden',
-          wordBreak: 'break-word',
-          lineHeight: 1.6,
-          padding: '10px',
-          boxSizing: 'border-box'
-        }}
-      >
+    <BaseNodeWithHandles style={nodeStyle}>
+      <div ref={contentRef} style={contentStyle}>
         <ReactMarkdown 
           components={{
             ...markdownComponents,

@@ -35,7 +35,6 @@ export default function Canvas({
         externalNodesChange(changes);
       }
       
-      // 更新節點位置
       if (onNodesUpdate) {
         onNodesUpdate(applyNodeChanges(changes, nodes));
       }
