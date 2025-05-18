@@ -15,19 +15,21 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
       {/* 左側 */}
       <div style={{ 
         position: 'absolute' as const,
+        top: '50%',
         left: 0,
-        top: height / 2,
+        transform: 'translateY(-50%)',
         width: 1,
         height: 1
       }}>
         <Handle type="target" position={Position.Left} id="left" />
       </div>
-      
+
       {/* 右側 */}
       <div style={{ 
         position: 'absolute' as const,
+        top: '50%',
         right: 0,
-        top: height / 2,
+        transform: 'translateY(-50%)',
         width: 1,
         height: 1
       }}>
@@ -38,7 +40,8 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
       <div style={{ 
         position: 'absolute' as const,
         top: 0,
-        left: width / 2,
+        left: '50%',
+        transform: 'translateX(-50%)',
         width: 1,
         height: 1
       }}>
@@ -49,7 +52,8 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
       <div style={{ 
         position: 'absolute' as const,
         bottom: 0,
-        left: width / 2,
+        left: '50%',
+        transform: 'translateX(-50%)',
         width: 1,
         height: 1
       }}>

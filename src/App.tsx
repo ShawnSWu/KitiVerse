@@ -22,7 +22,7 @@ function App() {
             },
             style: {
               width: 200,
-              height: 1000,
+              height: 500,
               backgroundColor: '#000000'
             }
           },
