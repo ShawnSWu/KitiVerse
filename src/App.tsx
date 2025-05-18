@@ -1,47 +1,61 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Canvas from "./components/Canvas";
 import { convertToReactFlowGraph, toFlowNode, toFlowEdge } from "./utils/mappingUtils";
 import { readCanvasFile } from "./utils/fileUtils";
-import type { Node, Edge } from 'react-flow-renderer';
-import { Position } from 'react-flow-renderer';
+import type { Node, Edge, NodeChange, Connection } from 'react-flow-renderer';
+import { Position, applyNodeChanges, addEdge } from 'react-flow-renderer';
+
 function App() {
-  const [nodes, setNodes] = useState<Node[]>([] as Node[]);
-  const [edges, setEdges] = useState<Edge[]>([] as Edge[]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // 處理節點變更（包括拖動）
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
+    []
+  );
+
+  // 處理連線
+  const onConnect = useCallback((connection: Connection) => {
+    setEdges((eds) => addEdge(connection, eds));
+  }, []);
 
   useEffect(() => {
     const loadCanvasData = async () => {
       try {
-        const nodes = [
+        const initialNodes = [
           {
             id: 'node1',
             type: 'textNode',
-            position: { x: 100, y: 100 },
+            position: { x: 50, y: 100 },
             data: {
-              label: '# Title\n\nDescription\n\n- Feature 1\n- Feature 2\n\n**Important**: Note'
+              label: '# 當你透過 kubectl 或其他方式向 Kubernetes API 發送請求（例如創建一個 Pod）時，流程如下：\n\n1. **認證（Authentication）**：確認你是誰。\n2. **授權（Authorization）**：確認你有權限這麼做。\n3. **Admission Control**：在這裡，Admission Controllers 介入，根據啟用的控制器進行驗證或修改。\n4. **持久化**：如果通過上述步驟，請求才會被存入 etcd。'
             },
             style: {
               width: 200,
               height: 500,
-              backgroundColor: '#000000'
+              backgroundColor: '#344361'
             }
           },
           {
             id: 'node2',
             type: 'textNode',
-            position: { x: 1000, y: 100 },
+            position: { x: 1000, y: 160 },
             data: {
               label: '# Title 2\n\nDescription 2\n\n- Feature 1\n- Feature 2\n\n**Important**: Note 2'
             },
             style: {
-              width: 1500,
-              height: 200,
-              backgroundColor: '#FFFFFF'
+              width: 1200,
+              height: 20,
+              backgroundColor: '#344361'
             }
           }
         ];
 
-        const edges = [
+        const initialEdges = [
           {
             id: 'edge1',
             source: 'node1',
@@ -55,8 +69,8 @@ function App() {
           }
         ];
         
-        setNodes(nodes);
-        setEdges(edges);
+        setNodes(initialNodes);
+        setEdges(initialEdges);
       } catch (err) {
         console.error('Error loading canvas file:', err);
         setError('Failed to load canvas file. Please check the file path and content.');
@@ -64,7 +78,7 @@ function App() {
     };
 
     loadCanvasData();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   if (error) {
     return <div className="error-message">{error}</div>;
@@ -74,84 +88,17 @@ function App() {
     return <div className="loading">Loading...</div>;
   }
 
-  return <Canvas nodes={nodes} edges={edges} />;
-
-function App() {
-  const [nodes, setNodes] = useState<Node[]>([] as Node[]);
-  const [edges, setEdges] = useState<Edge[]>([] as Edge[]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadCanvasData = async () => {
-      try {
-
-        const nodes = [
-          {
-            id: 'node1',
-            type: 'textNode',
-            position: { x: 100, y: 0 },
-            data: {
-              label: '# Title\n\nDescription\n\n- Feature 1\n- Feature 2\n\n**Important**: Note'
-            },
-            style: {
-              width: 200,
-              height: 10,
-              backgroundColor: '#000000'
-            }
-          },
-          {
-            id: 'node2',
-            type: 'textNode',
-            position: { x: 0, y: 100 },
-            data: {
-              label: '# Title 2\n\nDescription 2\n\n- Feature 1\n- Feature 2\n\n**Important**: Note 2'
-            },
-            style: {
-              width: 200,
-              height: 10,
-              backgroundColor: '#FFFFFF'
-            }
-          }
-        ];
-
-        const edges = [
-          {
-            id: 'edge1',
-            source: 'node1',
-            target: 'node2',
-
-            sourceHandle: Position.Right as Position,
-            targetHandle: Position.Left as Position,  
-            style: {
-              strokeWidth: 1
-            },
-            
-            label: 'Connection between nodes'
-          }
-        ];
-        
-        setNodes(nodes);
-        setEdges(edges);
-        // setError(null);
-      } catch (err) {
-        console.error('Error loading canvas file:', err);
-        setError('Failed to load canvas file. Please check the file path and content.');
-      }
-    };
-
-    loadCanvasData();
-  }, []); // Empty dependency array means this runs once on mount
-
-
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
-  if (!nodes.length) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  return <Canvas nodes={nodes} edges={edges} />;
+  return (
+    <div className="app">
+      <Canvas 
+        nodes={nodes} 
+        edges={edges} 
+        onNodesChange={onNodesChange}
+        onConnect={onConnect}
+        onNodesUpdate={setNodes}
+      />
+    </div>
+  );
 }
-}
+
 export default App;
