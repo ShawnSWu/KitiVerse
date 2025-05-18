@@ -23,7 +23,7 @@ const markdownComponents = {
   )
 };
 
-interface TextNodeProps {
+interface MarkdownNodeProps {
   id: string;
   data: {
     label: string;
@@ -32,7 +32,7 @@ interface TextNodeProps {
   selected?: boolean;
 }
 
-const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false }) => {
+const MarkdownNode: React.FC<MarkdownNodeProps> = ({ data, style = {}, selected = false }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   
   // 設置自適應卡片的極限值
@@ -84,7 +84,12 @@ const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false 
     <BaseNodeWithHandles style={{
       ...nodeStyle,
       position: 'relative',  // 確保連接點相對於節點定位
-      boxSizing: 'border-box'  // 確保 padding 和 border 包含在元素尺寸內
+      boxSizing: 'border-box',  // 確保 padding 和 border 包含在元素尺寸內
+      display: 'inline-block',  // 確保元素正確包裹內容
+      width: 'auto',  // 讓寬度由內容決定
+      height: 'auto', // 讓高度由內容決定
+      minWidth: style.minWidth,
+      minHeight: style.minHeight
     }}>
       <div ref={contentRef} style={contentStyle}>
         <ReactMarkdown 
@@ -127,4 +132,4 @@ const TextNode: React.FC<TextNodeProps> = ({ data, style = {}, selected = false 
   );
 };
 
-export default TextNode;
+export default MarkdownNode;
