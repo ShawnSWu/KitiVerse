@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 
 type BaseNodeWithHandlesProps = {
@@ -7,6 +7,19 @@ type BaseNodeWithHandlesProps = {
 };
 
 const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, style = {} }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+  
+  const showHandles = isHovered || isSelected;
+  
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+  
+  // 當節點被選中或取消選中時更新狀態
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSelected(prev => !prev);
+  };
   const nodeRef = useRef<HTMLDivElement>(null);
 
   // 基礎樣式
@@ -29,7 +42,11 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
   return (
     <div 
       ref={nodeRef}
+      className="base-node"
       style={combinedStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
     >
       {/* 左側 Handle */}
       <Handle 
@@ -44,7 +61,10 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
           width: 12,
           height: 12,
           border: '2px solid #fff',
-          zIndex: 100
+          zIndex: 100,
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          pointerEvents: showHandles ? 'auto' : 'none'
         }}
       />
 
@@ -61,7 +81,10 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
           width: 12,
           height: 12,
           border: '2px solid #fff',
-          zIndex: 100
+          zIndex: 100,
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          pointerEvents: showHandles ? 'auto' : 'none'
         }}
       />
 
@@ -78,7 +101,10 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
           width: 12,
           height: 12,
           border: '2px solid #fff',
-          zIndex: 100
+          zIndex: 100,
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          pointerEvents: showHandles ? 'auto' : 'none'
         }}
       />
 
@@ -95,7 +121,10 @@ const BaseNodeWithHandles: React.FC<BaseNodeWithHandlesProps> = ({ children, sty
           width: 12,
           height: 12,
           border: '2px solid #fff',
-          zIndex: 100
+          zIndex: 100,
+          opacity: showHandles ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          pointerEvents: showHandles ? 'auto' : 'none'
         }}
       />
 
