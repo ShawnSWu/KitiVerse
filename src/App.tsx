@@ -5,11 +5,15 @@ import 'reactflow/dist/style.css';
 import './styles/markdownNode.css';
 import './styles/theme.css';
 import MarkdownNode from './components/nodes/MarkdownNode';
-import visualConfig from './config/visualConfig.json';
+import CustomEdge from './components/edges/CustomEdge';
 
-// 註冊自定義節點類型
+// 註冊自定義節點和邊類型
 const nodeTypes = {
   markdown: MarkdownNode,
+};
+
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 // 示例數據
@@ -24,12 +28,7 @@ const initialNodes: Node[] = [
     position: { x: 0, y: 0 },
     style: { 
       width: 800, 
-      height: 600,
-      backgroundColor: 'var(--background-light)',
-      border: '1px solid var(--border-color)',
-      borderRadius: 'var(--border-radius-md)',
-      padding: 'var(--spacing-md)',
-      boxShadow: 'var(--shadow-sm)'
+      height: 600
     },
     draggable: true,
   },
@@ -43,12 +42,7 @@ const initialNodes: Node[] = [
     position: { x: 1000, y: 0 },
     style: { 
       width: 800, 
-      height: 600,
-      backgroundColor: 'var(--background-light)',
-      border: '1px solid var(--border-color)',
-      borderRadius: 'var(--border-radius-md)',
-      padding: 'var(--spacing-md)',
-      boxShadow: 'var(--shadow-sm)'
+      height: 600
     },
     draggable: true,
   },
@@ -62,19 +56,9 @@ const initialEdges: Edge[] = [
     sourceHandle: 'right',
     targetHandle: 'left',
     type: 'custom',
-    style: {
-      stroke: 'var(--primary)',
-      strokeWidth: 1,
-    },
     data: {
-      config: {
-        fontSize: 'var(--font-size-sm)',
-        backgroundColor: 'var(--background-light)',
-        textColor: 'var(--text-primary)',
-        fontFamily: 'var(--font-family)'
-      }
-    },
-    label: 'Pod 可以被 Service 選擇',
+      label: 'Pod 可以被 Service 選擇'
+    }
   },
 ];
 
@@ -102,18 +86,9 @@ function App() {
         sourceHandle: connection.sourceHandle || undefined,
         targetHandle: connection.targetHandle || undefined,
         type: 'custom',
-        style: {
-          stroke: 'var(--border-color)',
-          strokeWidth: 1,
-        },
         data: {
-          config: {
-            fontSize: 'var(--font-size-sm)',
-            backgroundColor: 'var(--background-light)',
-            textColor: 'var(--text-secondary)',
-            fontFamily: 'var(--font-family)'
-          }
-        },
+          label: '新連接'
+        }
       };
       setEdges((eds) => [...eds, newEdge]);
     }
@@ -125,6 +100,7 @@ function App() {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         fitView

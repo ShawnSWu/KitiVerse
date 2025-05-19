@@ -1,83 +1,80 @@
 .markdown-node {
-  background: #1e1e1e;
-  border-radius: 8px;
-  padding: 16px;
-  min-width: 200px;
-  max-width: 800px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .markdown-content {
-  color: #e0e0e0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  transition: var(--transition-normal);
+  cursor: move;
+  overflow: auto;
 }
 
+/* 移除 ReactFlow 默認的節點樣式 */
+.react-flow__node {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 確保連接點在正確的位置 */
+.react-flow__handle {
+  width: 6px !important;
+  height: 6px !important;
+  background: var(--border-color) !important;
+  border: none !important;
+  transition: var(--transition-fast) !important;
+}
+
+.react-flow__handle:hover {
+  background: var(--primary) !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Markdown 內容樣式 */
 .markdown-content h1 {
-  font-size: 1.8em;
-  margin: 0.8em 0 0.4em;
-  color: #fff;
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-md);
 }
 
 .markdown-content h2 {
-  font-size: 1.5em;
-  margin: 0.7em 0 0.3em;
-  color: #fff;
-}
-
-.markdown-content h3 {
-  font-size: 1.3em;
-  margin: 0.6em 0 0.3em;
-  color: #fff;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 .markdown-content p {
-  margin: 0.5em 0;
-}
-
-.markdown-content ul, .markdown-content ol {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
-}
-
-.markdown-content li {
-  margin: 0.3em 0;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
 }
 
 .markdown-content code {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-family: 'Fira Code', 'Consolas', monospace;
-  font-size: 0.9em;
-}
-
-.markdown-content pre {
-  margin: 0.8em 0;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.markdown-content blockquote {
-  border-left: 4px solid #6366f1;
-  margin: 0.8em 0;
-  padding: 0.5em 1em;
-  background: rgba(99, 102, 241, 0.1);
-}
-
-.markdown-content a {
-  color: #60a5fa;
-  text-decoration: none;
-}
-
-.markdown-content a:hover {
-  text-decoration: underline;
+  background-color: var(--background-medium);
+  color: var(--text-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family);
 }
 
 .error-message {
-  color: #ef4444;
-  padding: 1em;
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: 4px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--color-red);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-red);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--background-light);
 } 
