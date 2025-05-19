@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Canvas from "./components/Canvas";
-import { convertToReactFlowGraph, toFlowNode, toFlowEdge } from "./utils/mappingUtils";
-import { readCanvasFile } from "./utils/fileUtils";
-import type { Node, Edge, NodeChange, Connection } from 'react-flow-renderer';
-import { applyNodeChanges, addEdge } from 'react-flow-renderer';
+import type { Node, Edge, NodeChange, Connection } from 'reactflow';
+import { applyNodeChanges, addEdge } from 'reactflow';
 
 function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -50,12 +48,22 @@ function App() {
               width: 200,
               backgroundColor: '#344361'
             }
+          },
+          {
+            id: 'imageNode1',
+            type: 'imageNode',
+            position: { x: 500, y: 300 },
+            data: {
+              url: 'https://picsum.photos/400/300',  // 使用一個示例圖片
+              alt: 'Example Image'
+            }
           }
         ];
 
         const initialEdges = [
           {
             id: 'edge1',
+            type: 'custom',
             source: 'node1',
             target: 'node2',
             sourceHandle: 'right',
@@ -63,7 +71,33 @@ function App() {
             style: {
               strokeWidth: 2
             },
+            data: {
+              config: {
+                fontSize: 'normal',
+                backgroundColor: 'primary',
+                textColor: 'default'
+              }
+            },
             label: 'Connection between nodesqqqqqqq',
+          },
+          {
+            id: 'edge2',
+            type: 'custom',
+            source: 'node1',
+            target: 'imageNode1',
+            sourceHandle: 'bottom',
+            targetHandle: 'top',
+            style: {
+              strokeWidth: 2
+            },
+            data: {
+              config: {
+                fontSize: 'normal',
+                backgroundColor: 'secondary',
+                textColor: 'default'
+              }
+            },
+            label: 'Image Connection',
           }
         ];
         

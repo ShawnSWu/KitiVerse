@@ -1,0 +1,69 @@
+{
+  "fontSizes": {
+    "tiny": {
+      "fontSize": 10,
+      "padding": 8
+    },
+    "compact": {
+      "fontSize": 14,
+      "padding": 10
+    },
+    "normal": {
+      "fontSize": 18,
+      "padding": 12
+    },
+    "prominent": {
+      "fontSize": 24,
+      "padding": 14
+    },
+    "emphasis": {
+      "fontSize": 32,
+      "padding": 16
+    },
+    "highlight": {
+      "fontSize": 40,
+      "padding": 20
+    }
+  },
+  "backgroundColors": {
+    "default": {
+      "fill": "rgba(0, 0, 0, 0.7)",
+      "stroke": "none"
+    },
+    "light": {
+      "fill": "rgba(255, 255, 255, 0.9)",
+      "stroke": "rgba(0, 0, 0, 0.2)"
+    },
+    "dark": {
+      "fill": "rgba(0, 0, 0, 0.85)",
+      "stroke": "rgba(255, 255, 255, 0.1)"
+    },
+    "primary": {
+      "fill": "rgba(99, 102, 241, 0.9)",
+      "stroke": "rgba(255, 255, 255, 0.2)"
+    },
+    "secondary": {
+      "fill": "rgba(79, 70, 229, 0.9)",
+      "stroke": "rgba(255, 255, 255, 0.2)"
+    },
+    "accent": {
+      "fill": "rgba(67, 56, 202, 0.9)",
+      "stroke": "rgba(255, 255, 255, 0.2)"
+    }
+  },
+  "textColors": {
+    "default": "white",
+    "light": "#1f2937",
+    "dark": "white",
+    "primary": "white",
+    "secondary": "white",
+    "accent": "white"
+  },
+  "defaults": {
+    "fontSize": "normal",
+    "backgroundColor": "default",
+    "textColor": "default",
+    "fontWeight": 700,
+    "rx": 6
+  }
+} 

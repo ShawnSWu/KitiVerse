@@ -1,6 +1,20 @@
 import type { FC } from 'react';
-import { getBezierPath } from 'react-flow-renderer';
-import type { EdgeProps } from 'react-flow-renderer';
+import { getBezierPath } from 'reactflow';
+import type { EdgeProps } from 'reactflow';
+import edgeStyles from '../../config/edgeStyles.json';
+
+// 定義配置類型
+type FontSizeKey = keyof typeof edgeStyles.fontSizes;
+type BackgroundColorKey = keyof typeof edgeStyles.backgroundColors;
+type TextColorKey = keyof typeof edgeStyles.textColors;
+
+interface EdgeConfig {
+  fontSize: FontSizeKey;
+  backgroundColor: BackgroundColorKey;
+  textColor: TextColorKey;
+  fontWeight: string;
+  rx: number;
+}
 
 const CustomEdge: FC<EdgeProps> = ({
   id,
@@ -13,6 +27,7 @@ const CustomEdge: FC<EdgeProps> = ({
   style = {},
   label,
   markerEnd,
+  data,
 }) => {
   // 計算連接線路徑
   const [edgePath] = getBezierPath({
@@ -31,6 +46,52 @@ const CustomEdge: FC<EdgeProps> = ({
     ...style,
   };
 
+  // 獲取標籤設定
+  const config: EdgeConfig = {
+    ...edgeStyles.defaults,
+    ...data?.config
+  };
+
+  // 獲取字體大小設定
+  const fontSizeConfig = edgeStyles.fontSizes[config.fontSize];
+  
+  // 獲取背景顏色設定
+  const backgroundColorConfig = edgeStyles.backgroundColors[config.backgroundColor];
+  
+  // 獲取文字顏色
+  const textColor = edgeStyles.textColors[config.textColor];
+
+  // 合併文字樣式
+  const textStyle = {
+    fontSize: fontSizeConfig.fontSize,
+    fontWeight: config.fontWeight,
+    fill: textColor,
+    dominantBaseline: 'central' as const,
+    textAnchor: 'middle' as const,
+  };
+
+  // 計算文字寬度（使用一個臨時的 text 元素）
+  const getTextWidth = (text: string, fontSize: number): number => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.font = `${config.fontWeight} ${fontSize}px sans-serif`;
+      return context.measureText(text).width;
+    }
+    return 0;
+  };
+
+  const textWidth = getTextWidth(label?.toString() || '', fontSizeConfig.fontSize);
+  const padding = fontSizeConfig.padding;
+
+  // 合併背景樣式
+  const backgroundStyle = {
+    ...backgroundColorConfig,
+    width: textWidth + (padding * 2),
+    height: fontSizeConfig.fontSize + (padding * 2),
+    rx: config.rx,
+  };
+
   return (
     <>
       {/* 渲染邊緣線 */}
@@ -42,41 +103,24 @@ const CustomEdge: FC<EdgeProps> = ({
         markerEnd={markerEnd}
       />
       
-      {/* 渲染標籤 - 直接在中間位置顯示 */}
+      {/* 渲染標籤 */}
       {label && (
-        <text
-          style={{
-            fontSize: 16,
-            fontWeight: 700,
-            fill: 'white',
-            dominantBaseline: 'central',
-            textAnchor: 'middle',
-          }}
-          x={(sourceX + targetX) / 2}
-          y={(sourceY + targetY) / 2}
-          dy={-10}
-        >
-          <tspan
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              fill: 'white',
-            }}
-            dx={-10}
-            dy={0}
+        <g transform={`translate(${(sourceX + targetX) / 2}, ${(sourceY + targetY) / 2})`}>
+          {/* 背景 */}
+          <rect
+            x={-backgroundStyle.width / 2}
+            y={-backgroundStyle.height / 2}
+            {...backgroundStyle}
+          />
+          {/* 文字 */}
+          <text
+            style={textStyle}
+            x={0}
+            y={0}
           >
             {label}
-          </tspan>
-          <rect
-            x={(sourceX + targetX) / 2 - 60}
-            y={(sourceY + targetY) / 2 - 15}
-            width={120}
-            height={30}
-            rx={4}
-            fill="rgba(0, 0, 0, 0.7)"
-            stroke="none"
-          />
-        </text>
+          </text>
+        </g>
       )}
     </>
   );
