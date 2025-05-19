@@ -1,135 +1,178 @@
-import React, { useRef } from "react";
+import { memo, useEffect, useState } from 'react';
+import { Handle, Position } from 'reactflow';
+import type { NodeProps } from 'reactflow';
 import ReactMarkdown from 'react-markdown';
-import BaseNodeWithHandles from "./BaseNodeWithHandles";
-import { useAutoResize } from "../../hooks/useAutoResize";
+import remarkGfm from 'remark-gfm';
 
-const markdownComponents = {
-  h1: ({node, ...props}: any) => <h1 style={{fontSize: '1.5em', margin: '0.5em 0'}} {...props} />,
-  h2: ({node, ...props}: any) => <h2 style={{fontSize: '1.3em', margin: '0.4em 0'}} {...props} />,
-  p: ({node, ...props}: any) => <p style={{margin: '0.5em 0'}} {...props} />,
-  ul: ({node, ...props}: any) => <ul style={{margin: '0.5em 0', paddingLeft: '1.5em'}} {...props} />,
-  ol: ({node, ...props}: any) => <ol style={{margin: '0.5em 0', paddingLeft: '1.5em'}} {...props} />,
-  li: ({node, ...props}: any) => <li style={{margin: '0.25em 0'}} {...props} />,
-  strong: ({node, ...props}: any) => <strong style={{fontWeight: 'bold'}} {...props} />,
-  em: ({node, ...props}: any) => <em style={{fontStyle: 'italic'}} {...props} />,
-  code: ({node, ...props}: any) => (
-    <code style={{
-      backgroundColor: 'rgba(255,255,255,0.1)', 
-      padding: '0.2em 0.4em',
-      borderRadius: '3px',
-      fontFamily: 'monospace',
-      fontSize: '0.9em'
-    }} {...props} />
-  )
-};
-
-interface MarkdownNodeProps {
-  id: string;
+interface MarkdownNodeProps extends NodeProps {
   data: {
-    label: string;
+    file: string;
+    nodeType: 'primary' | 'secondary' | 'accent' | 'default';
   };
-  style?: React.CSSProperties;
-  selected?: boolean;
 }
 
-const MarkdownNode: React.FC<MarkdownNodeProps> = ({ data, style = {}, selected = false }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-  
-  // 設置自適應卡片的極限值
-  const MIN_WIDTH = 150;   // 最小寬度
-  const MIN_HEIGHT = 80;   // 最小高度
-  const MAX_WIDTH = 500;   // 最大寬度
-  const MAX_HEIGHT = 400;  // 最大高度
-  
-  // 使用 useAutoResize hook 來自動調整尺寸
-  const initialWidth = style.width ? Number(style.width) : 200;
-  const initialHeight = 100; // 初始高度
-  const autoSize = useAutoResize(
-    contentRef,    // 內容元素的引用
-    initialWidth,  // 初始寬度
-    initialHeight, // 初始高度
-    MIN_WIDTH,     // 最小寬度
-    MIN_HEIGHT,    // 最小高度
-    MAX_WIDTH,     // 最大寬度
-    MAX_HEIGHT     // 最大高度
-  );
-  
-  // 基礎節點樣式
-  const nodeStyle = {
-    backgroundColor: style.backgroundColor || '#344361',
-    color: style.color || '#fff',
-    padding: '12px',
-    borderRadius: '8px',
-    boxShadow: selected ? '0 0 0 2px #6366f1' : '0 2px 4px rgba(0,0,0,0.1)',
-    transition: 'all 0.2s ease',
-    ...style,
-    // 確保寬高使用自動計算的尺寸
-    width: autoSize.width,
-    height: autoSize.height
-  };
+const MarkdownNode = memo(({ data, isConnectable }: MarkdownNodeProps) => {
+  const [content, setContent] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
-  // 內容容器樣式
-  const contentStyle: React.CSSProperties = {
-    width: '100%',
-    minHeight: '100%',
-    overflow: 'hidden',
-    wordBreak: 'break-word' as const,
-    lineHeight: 1.6,
-    padding: '10px',
-    boxSizing: 'border-box',
-    color: style.color || (style.backgroundColor === '#FFFFFF' ? '#000' : '#fff')
+  useEffect(() => {
+    const fetchMarkdown = async () => {
+      try {
+        const response = await fetch(data.file);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch markdown file: ${response.statusText}`);
+        }
+        const text = await response.text();
+        setContent(text);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load markdown file');
+      }
+    };
+
+    if (data.file) {
+      fetchMarkdown();
+    }
+  }, [data.file]);
+
+  const getBorderColor = () => {
+    switch (data.nodeType) {
+      case 'primary':
+        return 'var(--primary)';
+      case 'secondary':
+        return 'var(--secondary)';
+      case 'accent':
+        return 'var(--accent)';
+      default:
+        return 'var(--border-color)';
+    }
   };
 
   return (
-    <BaseNodeWithHandles style={{
-      ...nodeStyle,
-      position: 'relative',  // 確保連接點相對於節點定位
-      boxSizing: 'border-box',  // 確保 padding 和 border 包含在元素尺寸內
-      display: 'inline-block',  // 確保元素正確包裹內容
-      width: 'auto',  // 讓寬度由內容決定
-      height: 'auto', // 讓高度由內容決定
-      minWidth: style.minWidth,
-      minHeight: style.minHeight
-    }}>
-      <div ref={contentRef} style={contentStyle}>
-        <ReactMarkdown 
-          components={{
-            ...markdownComponents,
-            pre: ({node, ...props}: any) => (
-              <pre style={{
-                backgroundColor: 'rgba(0,0,0,0.1)',
-                padding: '1em',
-                borderRadius: '4px',
-                overflowX: 'auto',
-                margin: '0.75em 0'
-              }} {...props} />
-            ),
-            blockquote: ({node, ...props}: any) => (
-              <blockquote style={{
-                borderLeft: '3px solid #ccc',
-                margin: '0.5em 0',
-                paddingLeft: '1em',
-                color: style?.backgroundColor === '#FFFFFF' ? '#555' : '#ddd'
-              }} {...props} />
-            ),
-            a: ({node, ...props}: any) => (
-              <a 
-                style={{
-                  color: '#60a5fa',
-                  textDecoration: 'none'
-                }} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                {...props} 
-              />
-            )
-          }}
-        >
-          {data.label}
-        </ReactMarkdown>
+    <div 
+      className="markdown-node" 
+      style={{ 
+        cursor: 'move',
+        backgroundColor: 'var(--background-light)',
+        border: `1px solid ${getBorderColor()}`,
+        borderRadius: 'var(--border-radius-md)',
+        padding: 'var(--spacing-md)',
+        boxShadow: 'var(--shadow-sm)',
+        fontFamily: 'var(--font-family)',
+        fontSize: 'var(--font-size-md)',
+        transition: 'var(--transition-normal)'
+      }}
+    >
+      {/* 頂部連接點 */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+        style={{ 
+          background: 'var(--border-color)',
+          width: 6,
+          height: 6,
+          transition: 'var(--transition-fast)'
+        }}
+      />
+      
+      {/* 右側連接點 */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        style={{ 
+          background: 'var(--border-color)',
+          width: 6,
+          height: 6,
+          transition: 'var(--transition-fast)'
+        }}
+      />
+      
+      {/* 底部連接點 */}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+        style={{ 
+          background: 'var(--border-color)',
+          width: 6,
+          height: 6,
+          transition: 'var(--transition-fast)'
+        }}
+      />
+      
+      {/* 左側連接點 */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{ 
+          background: 'var(--border-color)',
+          width: 6,
+          height: 6,
+          transition: 'var(--transition-fast)'
+        }}
+      />
+
+      <div className="markdown-content" style={{ color: 'var(--text-primary)' }}>
+        {error ? (
+          <div className="error-message" style={{ color: 'var(--color-red)' }}>{error}</div>
+        ) : (
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              code({ className, children, ...props }) {
+                return (
+                  <code 
+                    className={className} 
+                    {...props}
+                    style={{
+                      backgroundColor: 'var(--background-medium)',
+                      color: 'var(--text-primary)',
+                      padding: 'var(--spacing-xs) var(--spacing-sm)',
+                      borderRadius: 'var(--border-radius-sm)',
+                      fontFamily: 'var(--font-family)'
+                    }}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+              h1: ({ children }) => (
+                <h1 style={{ 
+                  color: 'var(--text-primary)',
+                  fontSize: 'var(--font-size-xl)',
+                  marginBottom: 'var(--spacing-md)'
+                }}>
+                  {children}
+                </h1>
+              ),
+              h2: ({ children }) => (
+                <h2 style={{ 
+                  color: 'var(--text-primary)',
+                  fontSize: 'var(--font-size-lg)',
+                  marginBottom: 'var(--spacing-sm)'
+                }}>
+                  {children}
+                </h2>
+              ),
+              p: ({ children }) => (
+                <p style={{ 
+                  color: 'var(--text-secondary)',
+                  marginBottom: 'var(--spacing-md)',
+                  lineHeight: 1.6
+                }}>
+                  {children}
+                </p>
+              )
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+        )}
       </div>
-    </BaseNodeWithHandles>
+    </div>
   );
-};
+});
 
 export default MarkdownNode;

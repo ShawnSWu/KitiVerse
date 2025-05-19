@@ -1,0 +1,55 @@
+:root {
+  /* Obsidian Minimal Theme Colors */
+  --primary: #7f6df2;      /* 主要紫色 */
+  --secondary: #4caf50;    /* 次要綠色 */
+  --accent: #ff9800;      /* 強調橙色 */
+  
+  /* Background Colors */
+  --background-light: #fafafa;    /* 最淺背景 */
+  --background-medium: #f5f5f5;   /* 中等背景 */
+  --background-dark: #e0e0e0;     /* 深色背景 */
+  
+  /* Text Colors */
+  --text-primary: #2e3338;        /* 主要文字 */
+  --text-secondary: #787b80;      /* 次要文字 */
+  --text-light: #9b9d9f;          /* 淺色文字 */
+  
+  /* Semantic Colors */
+  --color-red: #ff5555;           /* 錯誤/警告 */
+  --color-green: #50fa7b;         /* 成功 */
+  --color-yellow: #f1fa8c;        /* 提示 */
+  --color-blue: #8be9fd;          /* 信息 */
+  
+  /* Border Colors */
+  --border-color: #e0e0e0;
+  --border-color-hover: #7f6df2;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+} 

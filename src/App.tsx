@@ -1,134 +1,141 @@
-import { useState, useEffect, useCallback } from "react";
-import Canvas from "./components/Canvas";
-import type { Node, Edge, NodeChange, Connection } from 'reactflow';
-import { applyNodeChanges, addEdge } from 'reactflow';
+import { useState, useCallback } from 'react';
+import { ReactFlow, Background, Controls, MiniMap } from 'reactflow';
+import type { Node, Edge, NodeChange, Connection, XYPosition } from 'reactflow';
+import 'reactflow/dist/style.css';
+import './styles/markdownNode.css';
+import './styles/theme.css';
+import MarkdownNode from './components/nodes/MarkdownNode';
+import visualConfig from './config/visualConfig.json';
+
+// 註冊自定義節點類型
+const nodeTypes = {
+  markdown: MarkdownNode,
+};
+
+// 示例數據
+const initialNodes: Node[] = [
+  {
+    id: 'pod-node',
+    type: 'markdown',
+    data: {
+      file: '/src/content/kubernetes/pod.md',
+      nodeType: 'primary'
+    },
+    position: { x: 0, y: 0 },
+    style: { 
+      width: 800, 
+      height: 600,
+      backgroundColor: 'var(--background-light)',
+      border: '1px solid var(--border-color)',
+      borderRadius: 'var(--border-radius-md)',
+      padding: 'var(--spacing-md)',
+      boxShadow: 'var(--shadow-sm)'
+    },
+    draggable: true,
+  },
+  {
+    id: 'service-node',
+    type: 'markdown',
+    data: {
+      file: '/src/content/kubernetes/service.md',
+      nodeType: 'secondary'
+    },
+    position: { x: 1000, y: 0 },
+    style: { 
+      width: 800, 
+      height: 600,
+      backgroundColor: 'var(--background-light)',
+      border: '1px solid var(--border-color)',
+      borderRadius: 'var(--border-radius-md)',
+      padding: 'var(--spacing-md)',
+      boxShadow: 'var(--shadow-sm)'
+    },
+    draggable: true,
+  },
+];
+
+const initialEdges: Edge[] = [
+  {
+    id: 'pod-to-service',
+    source: 'pod-node',
+    target: 'service-node',
+    sourceHandle: 'right',
+    targetHandle: 'left',
+    type: 'custom',
+    style: {
+      stroke: 'var(--primary)',
+      strokeWidth: 1,
+    },
+    data: {
+      config: {
+        fontSize: 'var(--font-size-sm)',
+        backgroundColor: 'var(--background-light)',
+        textColor: 'var(--text-primary)',
+        fontFamily: 'var(--font-family)'
+      }
+    },
+    label: 'Pod 可以被 Service 選擇',
+  },
+];
 
 function App() {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  // 處理節點變更（包括拖動）
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-    },
-    []
-  );
-
-  // 處理連線
-  const onConnect = useCallback((connection: Connection) => {
-    setEdges((eds) => addEdge(connection, eds));
-  }, []);
-
-  useEffect(() => {
-    const loadCanvasData = async () => {
-      try {
-        const initialNodes = [
-          {
-            id: 'node1',
-            type: 'textNode',
-            position: { x: 10, y: 10 },
-            data: {
-              label: '# 當你透過 kubectl 或其他方式向 Kubernetes API 發送請求（例如創建一個 Pod）時，流程如下：\n\n1. **認證（Authentication）**：確認你是誰。\n2. **授權（Authorization）**：確認你有權限這麼做。\n3. **Admission Control**：在這裡，Admission Controllers 介入，根據啟用的控制器進行驗證或修改。\n4. **持久化**：如果通過上述步驟，請求才會被存入 etcd。'
-            },
-            style: {
-              width: 200,
-              backgroundColor: '#344361'
-            }
-          }, 
-          {
-            id: 'node2',
-            type: 'textNode',
-            position: { x: 1000, y: 100 },
-            data: {
-              label: '# 將流量轉發到對應的 Pod\n### KubeProxy 會根據 Service 的要求，將流量轉發到對應的後端的 Pod'
-            },
-            style: {
-              width: 200,
-              backgroundColor: '#344361'
-            }
-          },
-          {
-            id: 'imageNode1',
-            type: 'imageNode',
-            position: { x: 500, y: 300 },
-            data: {
-              url: 'https://picsum.photos/400/300',  // 使用一個示例圖片
-              alt: 'Example Image'
-            }
-          }
-        ];
-
-        const initialEdges = [
-          {
-            id: 'edge1',
-            type: 'custom',
-            source: 'node1',
-            target: 'node2',
-            sourceHandle: 'right',
-            targetHandle: 'left',
-            style: {
-              strokeWidth: 2
-            },
-            data: {
-              config: {
-                fontSize: 'normal',
-                backgroundColor: 'primary',
-                textColor: 'default'
-              }
-            },
-            label: 'Connection between nodesqqqqqqq',
-          },
-          {
-            id: 'edge2',
-            type: 'custom',
-            source: 'node1',
-            target: 'imageNode1',
-            sourceHandle: 'bottom',
-            targetHandle: 'top',
-            style: {
-              strokeWidth: 2
-            },
-            data: {
-              config: {
-                fontSize: 'normal',
-                backgroundColor: 'secondary',
-                textColor: 'default'
-              }
-            },
-            label: 'Image Connection',
-          }
-        ];
-        
-        setNodes(initialNodes);
-        setEdges(initialEdges);
-      } catch (err) {
-        console.error('Error loading canvas file:', err);
-        setError('Failed to load canvas file. Please check the file path and content.');
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes((nds) => nds.map((node) => {
+      const change = changes.find((c) => 'id' in c && c.id === node.id);
+      if (change && 'type' in change && change.type === 'position' && 'position' in change) {
+        const position = change.position as XYPosition;
+        return { ...node, position };
       }
-    };
-
-    loadCanvasData();
+      return node;
+    }));
   }, []);
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
-  if (!nodes.length) {
-    return <div className="loading">Loading...</div>;
-  }
+  const onConnect = useCallback((connection: Connection) => {
+    if (connection.source && connection.target) {
+      const newEdge: Edge = {
+        id: `edge-${connection.source}-${connection.target}`,
+        source: connection.source,
+        target: connection.target,
+        sourceHandle: connection.sourceHandle || undefined,
+        targetHandle: connection.targetHandle || undefined,
+        type: 'custom',
+        style: {
+          stroke: 'var(--border-color)',
+          strokeWidth: 1,
+        },
+        data: {
+          config: {
+            fontSize: 'var(--font-size-sm)',
+            backgroundColor: 'var(--background-light)',
+            textColor: 'var(--text-secondary)',
+            fontFamily: 'var(--font-family)'
+          }
+        },
+      };
+      setEdges((eds) => [...eds, newEdge]);
+    }
+  }, []);
 
   return (
-    <div className="app">
-      <Canvas 
-        nodes={nodes} 
-        edges={edges} 
+    <div style={{ width: '100vw', height: '100vh', backgroundColor: 'var(--background-light)' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
-        onNodesUpdate={setNodes}
-      />
+        fitView
+      >
+        <Background color="var(--border-color)" gap={16} />
+        <Controls style={{ backgroundColor: 'var(--background-light)' }} />
+        <MiniMap 
+          style={{ backgroundColor: 'var(--background-light)' }}
+          nodeColor="var(--border-color)"
+        />
+      </ReactFlow>
     </div>
   );
 }
