@@ -1,0 +1,26 @@
+.image-node {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--background-primary);
+  border: 1px solid var(--border-color);
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+}
+
+.image-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 14px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+} 

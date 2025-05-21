@@ -1,11 +1,41 @@
 // src/components/nodes/ImageNode.tsx
 import React from 'react';
-import type { NodeProps } from 'react-flow-renderer';
+import { Handle, Position } from 'reactflow';
+import type { NodeProps } from '@reactflow/core';
 
-export default function ImageNode({ data }: NodeProps) {
+interface ImageNodeData {
+  label: string;
+  imagePath: string;
+  contentFolder?: string;
+}
+
+export default function ImageNode({ data }: NodeProps<ImageNodeData>) {
+  // 構建圖片路徑
+  const imageUrl = data.contentFolder 
+    ? `./src/content/${data.contentFolder}/attachments/${data.imagePath}`
+    : `./src/content/attachments/${data.imagePath}`;
+
   return (
-    <div style={{ border: '1px solid #ccc', borderRadius: 8, width: 160, height: 120 }}>
-      <img src={data.url} alt={data.alt || 'image'} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+    <div className="image-node">
+      <Handle type="target" position={Position.Top} />
+      <div className="image-container">
+        <img 
+          src={imageUrl}
+          alt={data.label}
+          style={{
+            width: '100%',
+            height: 'auto',
+            borderRadius: '8px',
+            objectFit: 'cover'
+          }}
+          onError={(e) => {
+            console.error('Image load error:', imageUrl);
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <div className="image-label">{data.label}</div>
+      </div>
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 }

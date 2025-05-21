@@ -1,5 +1,6 @@
-import { memo, useEffect, useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import type { NodeProps } from '@reactflow/core';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -8,11 +9,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './markdownNode.css';
 
-interface MarkdownNodeProps {
-  data: {
-    file: string;
-    nodeType?: 'primary' | 'secondary' | 'tertiary';
-  };
+interface MarkdownNodeData {
+  file: string;
+  nodeType: 'primary' | 'secondary';
 }
 
 interface CodeProps extends React.HTMLAttributes<HTMLElement> {
@@ -20,27 +19,15 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
   className?: string;
 }
 
-const getNodeBackground = (nodeType?: string) => {
-  switch (nodeType) {
-    case 'primary':
-      return 'var(--background-primary)';
-    case 'secondary':
-      return 'var(--background-secondary)';
-    case 'tertiary':
-      return 'var(--background-secondary-alt)';
-    default:
-      return 'var(--background-secondary)';
-  }
-};
-
-const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
+export default function MarkdownNode({ data }: NodeProps<MarkdownNodeData>) {
   const [content, setContent] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const response = await fetch(data.file);
+        const filePath = data.file.startsWith('/') ? data.file : `/${data.file}`;
+        const response = await fetch(filePath);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -48,6 +35,7 @@ const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
         setContent(text);
         setError(null);
       } catch (err) {
+        console.error('Error loading markdown:', err);
         setError(err instanceof Error ? err.message : 'Failed to load content');
         setContent('');
       }
@@ -56,18 +44,30 @@ const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
     fetchContent();
   }, [data.file]);
 
-  const nodeBackground = getNodeBackground(data.nodeType);
+  const getNodeBackground = () => {
+    switch (data.nodeType) {
+      case 'primary':
+        return 'var(--background-primary)';
+      case 'secondary':
+        return 'var(--background-secondary)';
+      default:
+        return 'var(--background-primary)';
+    }
+  };
 
   return (
     <div
       className="markdown-node theme-dark"
-      style={{ backgroundColor: nodeBackground }}
+      style={{
+        background: getNodeBackground(),
+        border: '1px solid var(--border-color)',
+        borderRadius: '8px',
+        padding: '16px',
+        minWidth: '200px',
+        maxWidth: '800px',
+      }}
     >
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="node-handle"
-      />
+      <Handle type="target" position={Position.Top} />
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
@@ -113,15 +113,9 @@ const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
           </ReactMarkdown>
         </div>
       )}
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="node-handle"
-      />
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
-});
+}
 
 MarkdownNode.displayName = 'MarkdownNode';
-
-export default MarkdownNode;

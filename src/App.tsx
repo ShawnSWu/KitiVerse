@@ -1,15 +1,18 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ReactFlow, Background, Controls, MiniMap } from 'reactflow';
 import type { Node, Edge, NodeChange, Connection, XYPosition } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './styles/markdownNode.css';
 import './themes/theme.css';
+import './App.css';
 import MarkdownNode from './components/nodes/MarkdownNode';
+import ImageNode from './components/nodes/ImageNode';
 import CustomEdge from './components/edges/CustomEdge';
 
 // 註冊自定義節點和邊類型
 const nodeTypes = {
   markdown: MarkdownNode,
+  imageNode: ImageNode,
 };
 
 const edgeTypes = {
@@ -46,6 +49,36 @@ const initialNodes: Node[] = [
     },
     draggable: true,
   },
+  {
+    id: 'abc-image',
+    type: 'imageNode',
+    position: { x: 400, y: 200 },
+    data: {
+      label: 'ABC Image',
+      imagePath: 'abc.png',
+      contentFolder: 'kubernetes'
+    }
+  },
+  {
+    id: 'pod-image',
+    type: 'imageNode',
+    position: { x: 100, y: 100 },
+    data: {
+      label: 'Kubernetes Pod',
+      imagePath: 'pod.png',
+      contentFolder: 'kubernetes'
+    }
+  },
+  {
+    id: 'container-image',
+    type: 'imageNode',
+    position: { x: 400, y: 100 },
+    data: {
+      label: 'Docker Container',
+      imagePath: 'container.png',
+      contentFolder: 'docker'
+    }
+  },
 ];
 
 const initialEdges: Edge[] = [
@@ -53,8 +86,6 @@ const initialEdges: Edge[] = [
     id: 'pod-to-service',
     source: 'pod-node',
     target: 'service-node',
-    sourceHandle: 'right',
-    targetHandle: 'left',
     type: 'custom',
     data: {
       label: 'Pod 可以被 Service 選擇',
@@ -89,8 +120,6 @@ function App() {
         id: `edge-${connection.source}-${connection.target}`,
         source: connection.source,
         target: connection.target,
-        sourceHandle: connection.sourceHandle || undefined,
-        targetHandle: connection.targetHandle || undefined,
         type: 'custom',
         data: {
           label: '新連接',
@@ -106,6 +135,10 @@ function App() {
     }
   }, []);
 
+  // 使用 useMemo 來記憶化節點類型和邊類型
+  const memoizedNodeTypes = useMemo(() => nodeTypes, []);
+  const memoizedEdgeTypes = useMemo(() => edgeTypes, []);
+
   return (
     <div className="theme-dark" style={{ 
       width: '100vw', 
@@ -113,19 +146,26 @@ function App() {
       backgroundColor: 'var(--background-primary)',
       color: 'var(--text-normal)',
       fontFamily: 'var(--font-text)',
+      overflow: 'hidden'  // 防止出現滾動條
     }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
+        nodeTypes={memoizedNodeTypes}
+        edgeTypes={memoizedEdgeTypes}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         fitView
+        style={{
+          backgroundColor: 'var(--background-primary)'
+        }}
       >
         <Background 
           color="var(--background-modifier-border)" 
           gap={16} 
+          style={{
+            backgroundColor: 'var(--background-primary)'
+          }}
         />
         <Controls 
           style={{ 
