@@ -7,22 +7,24 @@
   max-width: 800px;
   color: var(--text-normal);
   font-family: var(--font-text);
+  background-color: var(--background-secondary);
 }
 
 .node-handle {
-  background: var(--interactive-accent) !important;
+  background: var(--text-accent) !important;
   width: 8px !important;
   height: 8px !important;
   border: 2px solid var(--background-primary) !important;
 }
 
 .error-message {
-  color: var(--text-error);
+  color: var(--color-red);
 }
 
 .markdown-content {
   overflow: auto;
   max-height: 600px;
+  color: var(--text-normal);
 }
 
 .markdown-content::-webkit-scrollbar {
@@ -31,100 +33,122 @@
 }
 
 .markdown-content::-webkit-scrollbar-track {
-  background: var(--scrollbar-bg);
+  background: var(--background-secondary);
   border-radius: var(--radius-s);
 }
 
 .markdown-content::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-bg);
+  background: var(--background-modifier-border);
   border-radius: var(--radius-s);
 }
 
 .markdown-content::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-bg-hover);
+  background: var(--text-muted);
 }
 
-.markdown-h1 {
-  color: var(--h1-color);
-  font-size: var(--h1-size);
-  margin-bottom: var(--spacing-m);
-}
-
-.markdown-h2 {
-  color: var(--h2-color);
-  font-size: var(--h2-size);
-  margin-bottom: var(--spacing-m);
-}
-
-.markdown-h3 {
-  color: var(--h3-color);
-  font-size: var(--h3-size);
-  margin-bottom: var(--spacing-s);
-}
-
-.markdown-p {
+/* Markdown 元素樣式 */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6,
+.markdown-content p,
+.markdown-content ul,
+.markdown-content ol,
+.markdown-content li,
+.markdown-content blockquote,
+.markdown-content table,
+.markdown-content th,
+.markdown-content td {
   color: var(--text-normal);
-  line-height: var(--line-height-text);
-  margin-bottom: var(--spacing-s);
 }
 
-.markdown-code-block {
-  background-color: var(--code-background) !important;
-  border-radius: var(--radius-s) !important;
-  padding: var(--spacing-s) !important;
-  margin: var(--spacing-s) 0 !important;
+.markdown-content h1 {
+  color: var(--h1-color);
+  font-size: 1.5em;
+  margin-bottom: 1em;
 }
 
-.markdown-inline-code {
+.markdown-content h2 {
+  color: var(--h2-color);
+  font-size: 1.3em;
+  margin-bottom: 0.8em;
+}
+
+.markdown-content h3 {
+  color: var(--h3-color);
+  font-size: 1.1em;
+  margin-bottom: 0.6em;
+}
+
+.markdown-content p {
+  line-height: 1.6;
+  margin-bottom: 0.8em;
+}
+
+.markdown-content code {
   background-color: var(--code-background);
-  color: var(--code-text);
+  color: var(--code-normal);
   padding: 2px 4px;
   border-radius: var(--radius-s);
   font-family: var(--font-monospace);
 }
 
-.markdown-link {
+.markdown-content pre {
+  background-color: var(--code-background) !important;
+  border-radius: var(--radius-s) !important;
+  padding: 1em !important;
+  margin: 1em 0 !important;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content a {
   color: var(--text-accent);
   text-decoration: none;
 }
 
-.markdown-link:hover {
+.markdown-content a:hover {
+  color: var(--text-accent-hover);
   text-decoration: underline;
 }
 
-.markdown-ul,
-.markdown-ol {
-  color: var(--text-normal);
-  padding-left: var(--spacing-m);
-  margin-bottom: var(--spacing-s);
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.8em;
 }
 
-.markdown-li {
-  margin-bottom: var(--spacing-xs);
+.markdown-content li {
+  margin-bottom: 0.4em;
 }
 
-.markdown-blockquote {
+.markdown-content blockquote {
   border-left: 4px solid var(--text-muted);
-  margin: var(--spacing-s) 0;
-  padding: var(--spacing-s) var(--spacing-m);
+  margin: 1em 0;
+  padding: 0.8em 1.2em;
   background-color: var(--background-secondary);
   border-radius: var(--radius-s);
 }
 
-.markdown-table {
+.markdown-content table {
   border-collapse: collapse;
   width: 100%;
-  margin-bottom: var(--spacing-s);
+  margin-bottom: 1em;
 }
 
-.markdown-th {
+.markdown-content th {
   background-color: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);
-  padding: var(--spacing-s);
+  padding: 0.8em;
   text-align: left;
 }
 
-.markdown-td {
+.markdown-content td {
   border: 1px solid var(--background-modifier-border);
-  padding: var(--spacing-s);
+  padding: 0.8em;
 } 

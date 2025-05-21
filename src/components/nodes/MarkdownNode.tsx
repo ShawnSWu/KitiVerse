@@ -23,13 +23,13 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
 const getNodeBackground = (nodeType?: string) => {
   switch (nodeType) {
     case 'primary':
-      return 'var(--node-background-primary)';
+      return 'var(--background-primary)';
     case 'secondary':
-      return 'var(--node-background-secondary)';
+      return 'var(--background-secondary)';
     case 'tertiary':
-      return 'var(--node-background-tertiary)';
+      return 'var(--background-secondary-alt)';
     default:
-      return 'var(--node-background-default)';
+      return 'var(--background-secondary)';
   }
 };
 
@@ -60,7 +60,7 @@ const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
 
   return (
     <div
-      className="markdown-node"
+      className="markdown-node theme-dark"
       style={{ backgroundColor: nodeBackground }}
     >
       <Handle
@@ -71,7 +71,7 @@ const MarkdownNode = memo(({ data }: MarkdownNodeProps) => {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <div className="markdown-content">
+        <div className="markdown-content theme-dark">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, rehypeSanitize]}
