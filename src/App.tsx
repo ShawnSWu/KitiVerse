@@ -57,7 +57,13 @@ const initialEdges: Edge[] = [
     targetHandle: 'left',
     type: 'custom',
     data: {
-      label: 'Pod 可以被 Service 選擇'
+      label: 'Pod 可以被 Service 選擇',
+      style: {
+        fontSize: '140px',
+        fill: '#e2e8f0',
+        fontWeight: 'bold',
+        textShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+      }
     }
   },
 ];
@@ -87,7 +93,13 @@ function App() {
         targetHandle: connection.targetHandle || undefined,
         type: 'custom',
         data: {
-          label: '新連接'
+          label: '新連接',
+          style: {
+            fontSize: '140px',
+            fill: '#e2e8f0',
+            fontWeight: 'bold',
+            textShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+          }
         }
       };
       setEdges((eds) => [...eds, newEdge]);
