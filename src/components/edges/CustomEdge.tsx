@@ -34,13 +34,28 @@ export default function CustomEdge({
     <>
       <BaseEdge
         path={edgePath}
-        markerEnd={markerEnd}
+        markerEnd="url(#arrowhead)"
         style={{
           ...style,
           stroke: '#94a3b8',
           strokeWidth: 4,
         }}
       />
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon
+            points="0 0, 10 3.5, 0 7"
+            fill="#94a3b8"
+          />
+        </marker>
+      </defs>
       {data?.label && (
         <g transform={`translate(${(sourceX + targetX) / 2}, ${(sourceY + targetY) / 2})`}>
           <text
