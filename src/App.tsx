@@ -3,7 +3,7 @@ import { ReactFlow, Background, Controls, MiniMap } from 'reactflow';
 import type { Node, Edge, NodeChange, Connection, XYPosition } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './styles/markdownNode.css';
-import './styles/theme.css';
+import './themes/theme.css';
 import MarkdownNode from './components/nodes/MarkdownNode';
 import CustomEdge from './components/edges/CustomEdge';
 
@@ -95,7 +95,13 @@ function App() {
   }, []);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', backgroundColor: 'var(--background-light)' }}>
+    <div className="theme-dark" style={{ 
+      width: '100vw', 
+      height: '100vh', 
+      backgroundColor: 'var(--background-primary)',
+      color: 'var(--text-normal)',
+      fontFamily: 'var(--font-text)',
+    }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -105,11 +111,24 @@ function App() {
         onConnect={onConnect}
         fitView
       >
-        <Background color="var(--border-color)" gap={16} />
-        <Controls style={{ backgroundColor: 'var(--background-light)' }} />
+        <Background 
+          color="var(--background-modifier-border)" 
+          gap={16} 
+        />
+        <Controls 
+          style={{ 
+            backgroundColor: 'var(--background-secondary)',
+            border: '1px solid var(--background-modifier-border)',
+            borderRadius: 'var(--radius-m)',
+          }} 
+        />
         <MiniMap 
-          style={{ backgroundColor: 'var(--background-light)' }}
-          nodeColor="var(--border-color)"
+          style={{ 
+            backgroundColor: 'var(--background-secondary)',
+            border: '1px solid var(--background-modifier-border)',
+            borderRadius: 'var(--radius-m)',
+          }}
+          nodeColor="var(--text-muted)"
         />
       </ReactFlow>
     </div>

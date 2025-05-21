@@ -1,4 +1,5 @@
-import { BaseEdge, EdgeProps, getBezierPath } from 'reactflow';
+import { BaseEdge, getBezierPath } from 'reactflow';
+import type { EdgeProps } from '@reactflow/core';
 
 export default function CustomEdge({
   sourceX,
@@ -27,8 +28,8 @@ export default function CustomEdge({
         markerEnd={markerEnd}
         style={{
           ...style,
-          stroke: 'var(--border-color)',
-          strokeWidth: 1,
+          stroke: '#94a3b8',
+          strokeWidth: 2,
         }}
       />
       {data?.label && (
@@ -38,9 +39,9 @@ export default function CustomEdge({
           textAnchor="middle"
           dominantBaseline="middle"
           style={{
-            fill: 'var(--text-secondary)',
-            fontSize: 'var(--font-size-sm)',
-            fontFamily: 'var(--font-family)',
+            fill: '#64748b',
+            fontSize: '14px',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
             pointerEvents: 'all',
           }}
         >
