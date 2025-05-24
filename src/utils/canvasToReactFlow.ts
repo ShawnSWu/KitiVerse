@@ -58,17 +58,46 @@ export const convertCanvasNode = (canvasNode: CanvasNode): Node => {
 
   // 處理文件類型節點
   if (canvasNode.type === 'file' && canvasNode.file) {
+    // 移除開頭的 public 或 /public 前綴（如果存在）
+    let filePath = canvasNode.file.replace(/^\/?public\//, '');
+    
+    // 確保路徑不以 / 開頭，因為我們希望它是相對於 public 目錄的
+    filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+    
     if (isMarkdownFile(canvasNode.file)) {
       // Markdown 文件處理
-      return {
-        ...baseNode,
-        type: 'markdown',
+      console.log('Processing markdown file:', filePath);
+      
+      // 創建 React Flow 節點
+      const node: Node = {
+        id: canvasNode.id || `node-${Date.now()}`,
+        type: 'markdown', // 這個類型必須與 App.tsx 中註冊的類型一致
+        position: {
+          x: canvasNode.x || 0,
+          y: canvasNode.y || 0
+        },
         data: {
           ...baseNode.data,
-          file: canvasNode.file,
-          nodeType: 'markdown'
+          file: filePath, // 這裡傳入相對路徑
+          nodeType: 'markdown',
+          label: canvasNode.label || (filePath ? filePath.split('/').pop() : 'Markdown') || 'Markdown',
+          style: {
+            width: canvasNode.width || 400,
+            height: canvasNode.height || 300,
+            padding: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }
+        },
+        style: {
+          width: canvasNode.width || 400,
+          height: canvasNode.height || 300
         }
       };
+      
+      return node;
     } else if (isImageFile(canvasNode.file)) {
       // 圖片文件處理
       return {
@@ -76,8 +105,9 @@ export const convertCanvasNode = (canvasNode: CanvasNode): Node => {
         type: 'image',
         data: {
           ...baseNode.data,
-          src: canvasNode.file,
-          nodeType: 'image'
+          src: filePath,
+          nodeType: 'image',
+          label: canvasNode.label || filePath.split('/').pop() || 'Image'
         },
         style: {
           ...baseNode.style,
@@ -165,12 +195,14 @@ export const convertCanvasToReactFlow = (canvasData: any) => {
 export const loadCanvasData = async (): Promise<{nodes: Node[]}> => {
   try {
     // 確保文件已經複製到 public 目錄下
-    
-    console.log(`/content/Container/Kubernetes/Kubernetes Overview.canvas`);
+    const canvasPath = '/content/Container/Kubernetes/Kubernetes Overview.canvas';
+    console.log('Loading canvas from:', canvasPath);
 
-    const response = await fetch(`/public/content/Container/Kubernetes/Kubernetes Overview.canvas`);
+    const response = await fetch(canvasPath);
     if (!response.ok) {
-      throw new Error(`Failed to load canvas data: ${response.statusText}`);
+      const errorText = await response.text().catch(() => 'No error details');
+      console.error('Failed to load canvas data:', response.status, errorText);
+      throw new Error(`Failed to load canvas data: ${response.status} ${response.statusText}`);
     }
     const canvasData = await response.json();
     console.log('Raw canvas data:', canvasData);
