@@ -5,15 +5,15 @@ import type { NodeProps } from '@reactflow/core';
 
 interface ImageNodeData {
   label: string;
-  imagePath: string;
-  contentFolder?: string;
+  src: string;  // 使用 src 而不是 imagePath
+  nodeType: string;
 }
 
 export default function ImageNode({ data }: NodeProps<ImageNodeData>) {
-  // 構建圖片路徑
-  const imageUrl = data.contentFolder 
-    ? `./src/content/${data.contentFolder}/attachments/${data.imagePath}`
-    : `./src/content/attachments/${data.imagePath}`;
+  // 直接使用 src 作為圖片路徑
+  const imageUrl = data.src.startsWith('http') || data.src.startsWith('/')
+    ? data.src
+    : `/${data.src}`;  // 確保是絕對路徑
 
   return (
     <div className="image-node">
@@ -29,7 +29,7 @@ export default function ImageNode({ data }: NodeProps<ImageNodeData>) {
             objectFit: 'cover'
           }}
           onError={(e) => {
-            console.error('Image load error:', imageUrl);
+            console.error('Image load error:', imageUrl, data);
             e.currentTarget.style.display = 'none';
           }}
         />

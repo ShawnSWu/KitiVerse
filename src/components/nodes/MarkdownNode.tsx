@@ -10,8 +10,10 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './markdownNode.css';
 
 interface MarkdownNodeData {
-  file: string;
-  nodeType: 'primary' | 'secondary';
+  file?: string;
+  content?: string;
+  nodeType: string;  // 更新為 string 類型以匹配 convertCanvasNode 中的值
+  label?: string;
 }
 
 interface CodeProps extends React.HTMLAttributes<HTMLElement> {
@@ -25,8 +27,24 @@ export default function MarkdownNode({ data }: NodeProps<MarkdownNodeData>) {
 
   useEffect(() => {
     const fetchContent = async () => {
+      // 如果沒有提供文件路徑，則使用 content 屬性（如果存在）
+      if (!data.file) {
+        if (data.content) {
+          setContent(data.content);
+          setError(null);
+        } else {
+          setError('No file path or content provided');
+        }
+        return;
+      }
+
       try {
-        const filePath = data.file.startsWith('/') ? data.file : `/${data.file}`;
+        // 確保文件路徑格式正確
+        let filePath = data.file;
+        if (!filePath.startsWith('/') && !filePath.startsWith('http')) {
+          filePath = `/${filePath}`;
+        }
+        
         const response = await fetch(filePath);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -42,7 +60,7 @@ export default function MarkdownNode({ data }: NodeProps<MarkdownNodeData>) {
     };
 
     fetchContent();
-  }, [data.file]);
+  }, [data.file, data.content]);
 
   const getNodeBackground = () => {
     switch (data.nodeType) {
