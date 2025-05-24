@@ -33,8 +33,9 @@ function App() {
     const loadData = async () => {
       try {
         console.log('Loading canvas data...');
-        const { nodes } = await loadCanvasData();
+        const { nodes, edges } = await loadCanvasData();
         console.log('Loaded nodes:', nodes);
+        console.log('Loaded edges:', edges);
         
         // 調整節點位置到可見範圍
         const adjustedNodes = nodes.map(node => {
@@ -57,13 +58,19 @@ function App() {
         });
         
         setNodes(adjustedNodes);
+        
+        // 設置邊緣
+        if (edges && edges.length > 0) {
+          console.log('Setting edges:', edges);
+          setEdges(edges);
+        }
       } catch (error) {
-        console.error('Error loading canvas data:', error);
+        console.error('Failed to load canvas data:', error);
       }
     };
     
     loadData();
-  }, [setNodes]);
+  }, [setNodes, setEdges]);
 
   const onConnect = useCallback((connection: Connection) => {
     if (connection.source && connection.target) {

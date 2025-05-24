@@ -1,6 +1,21 @@
-import { BaseEdge, getBezierPath, useStore } from 'reactflow';
-import type { EdgeProps } from '@reactflow/core';
+import { getBezierPath, BaseEdge, EdgeLabelRenderer } from 'reactflow';
+import { useStore } from '@reactflow/core';
 import { useMemo } from 'react';
+
+interface CustomEdgeProps {
+  id: string;
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
+  sourcePosition: any;
+  targetPosition: any;
+  style?: React.CSSProperties;
+  markerEnd?: string;
+  data?: {
+    label?: string;
+  };
+}
 
 export default function CustomEdge({
   sourceX,
@@ -12,8 +27,8 @@ export default function CustomEdge({
   style = {},
   markerEnd,
   data,
-}: EdgeProps) {
-  const [edgePath] = getBezierPath({
+}: Omit<CustomEdgeProps, 'id'>) {
+  const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -24,21 +39,46 @@ export default function CustomEdge({
 
   // 獲取當前的縮放級別
   const zoom = useStore((state) => state.transform[2]);
-
-  // 使用 useMemo 記憶化計算字體大小，只有當 zoom 變化時才重新計算
-  const fontSize = useMemo(() => Math.min(20 / zoom, 20), [zoom]);
+  const fontSize = useMemo(() => Math.min(14 / zoom, 14), [zoom]);
 
   return (
     <>
       <BaseEdge
         path={edgePath}
-        markerEnd="url(#arrowhead)"
+        markerEnd={markerEnd}
         style={{
           ...style,
-          stroke: '#94a3b8',
-          strokeWidth: 4,
+          stroke: style.stroke || '#94a3b8',
+          strokeWidth: style.strokeWidth || 2,
         }}
       />
+      {data?.label && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              background: 'rgba(255, 255, 255, 0.9)',
+              padding: '2px 8px',
+              borderRadius: 5,
+              fontSize: `${fontSize}px`,
+              fontWeight: 500,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              border: '1px solid #e2e8f0',
+              pointerEvents: 'all',
+              maxWidth: 200,
+              textAlign: 'center',
+            }}
+            className="nodrag nopan"
+          >
+            {data.label.split('\n').map((line, i) => (
+              <div key={i} style={{ lineHeight: '1.4' }}>
+                {line}
+              </div>
+            ))}
+          </div>
+        </EdgeLabelRenderer>
+      )}
       <defs>
         <marker
           id="arrowhead"

@@ -151,6 +151,16 @@ export const convertCanvasNode = (canvasNode: CanvasNode): Node => {
   return baseNode;
 };
 
+// 定義 Canvas 邊緣類型
+interface CanvasEdge {
+  id: string;
+  fromNode: string;
+  toNode: string;
+  fromSide?: 'top' | 'right' | 'bottom' | 'left';
+  toSide?: 'top' | 'right' | 'bottom' | 'left';
+  label?: string;
+}
+
 // 主轉換函數
 export const convertCanvasToReactFlow = (canvasData: any) => {
   if (!canvasData?.nodes?.length) {
@@ -169,30 +179,39 @@ export const convertCanvasToReactFlow = (canvasData: any) => {
     return convertCanvasNode(node);
   });
 
-  // 找出每種節點類型的第一個實例（用於調試）
-  const nodeTypes = new Set<string>();
-  const sampleNodes: Node[] = [];
+  // 轉換邊緣
+  const processedEdges = (canvasData.edges || []).map((edge: CanvasEdge) => ({
+    id: edge.id || `edge-${Math.random().toString(36).substr(2, 9)}`,
+    source: edge.fromNode,
+    target: edge.toNode,
+    sourceHandle: edge.fromSide?.toLowerCase(),
+    targetHandle: edge.toSide?.toLowerCase(),
+    type: 'custom', // 使用自訂邊緣類型
+    data: {
+      label: edge.label || '', // 傳遞標籤
+    },
+    style: {
+      stroke: '#94a3b8',
+      strokeWidth: 2,
+    },
+    markerEnd: {
+      type: 'arrowclosed',
+      color: '#94a3b8',
+    },
+  }));
 
-  for (const node of processedNodes) {
-    if (!nodeTypes.has(node.type)) {
-      nodeTypes.add(node.type);
-      sampleNodes.push(node);
-      
-      // 如果已經找到三種節點類型，就停止
-      if (nodeTypes.size === 3) break;
-    }
-  }
-
-  console.log('Sample nodes:', sampleNodes);
+  // 調試日誌
+  console.log('Processed nodes:', processedNodes);
+  console.log('Processed edges:', processedEdges);
 
   return {
     nodes: processedNodes,
-    edges: canvasData.edges || []
+    edges: processedEdges
   };
 };
 
 // 載入 Canvas 數據的函數
-export const loadCanvasData = async (): Promise<{nodes: Node[]}> => {
+export const loadCanvasData = async (): Promise<{nodes: Node[], edges: any[]}> => {
   try {
     // 確保文件已經複製到 public 目錄下
     const canvasPath = '/content/Container/Kubernetes/Kubernetes Overview.canvas';
@@ -206,11 +225,12 @@ export const loadCanvasData = async (): Promise<{nodes: Node[]}> => {
     }
     const canvasData = await response.json();
     console.log('Raw canvas data:', canvasData);
-    const result = convertCanvasToReactFlow(canvasData);
-    console.log('Converted nodes:', result.nodes);
-    return result;
+    const { nodes, edges } = convertCanvasToReactFlow(canvasData);
+    console.log('Converted nodes:', nodes);
+    console.log('Converted edges:', edges);
+    return { nodes, edges };
   } catch (error) {
     console.error('Failed to load canvas data:', error);
-    return { nodes: [] };
+    return { nodes: [], edges: [] };
   }
 };
