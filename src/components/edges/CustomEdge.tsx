@@ -1,5 +1,6 @@
 import { BaseEdge, getBezierPath, useStore } from 'reactflow';
 import type { EdgeProps } from '@reactflow/core';
+import { useMemo } from 'react';
 
 export default function CustomEdge({
   sourceX,
@@ -24,11 +25,8 @@ export default function CustomEdge({
   // 獲取當前的縮放級別
   const zoom = useStore((state) => state.transform[2]);
 
-  // 根據縮放級別計算文字大小（與縮放級別成反比）
-  const fontSize = Math.min(20 / zoom, 20); // 最大字體大小為 20px
-
-  // 輸出當前的縮放級別和字體大小
-  console.log('Current zoom:', zoom, 'Font size:', fontSize);
+  // 使用 useMemo 記憶化計算字體大小，只有當 zoom 變化時才重新計算
+  const fontSize = useMemo(() => Math.min(20 / zoom, 20), [zoom]);
 
   return (
     <>
