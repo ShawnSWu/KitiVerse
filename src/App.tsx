@@ -33,36 +33,58 @@ function App() {
     const loadData = async () => {
       try {
         console.log('Loading canvas data...');
-        const { nodes, edges } = await loadCanvasData();
-        console.log('Loaded nodes:', nodes);
-        console.log('Loaded edges:', edges);
+        const { nodes: loadedNodes, edges: loadedEdges } = await loadCanvasData();
+        console.log('Loaded nodes:', loadedNodes);
+        console.log('Loaded edges:', loadedEdges);
         
-        // 調整節點位置到可見範圍
-        const adjustedNodes = nodes.map(node => {
+        // 計算節點位置，確保有足夠的間距
+        const NODE_PADDING = 100; // 節點之間的間距
+        const BASE_X = 100; // 起始 X 坐標
+        const BASE_Y = 100; // 起始 Y 坐標
+        const COLUMN_WIDTH = 400; // 每列的寬度
+        const ROW_HEIGHT = 300; // 每行的高度
+        
+        // 計算節點應該在哪一行哪一列
+        const adjustedNodes = loadedNodes.map((node, index) => {
           const nodeWidth = typeof node.style?.width === 'number' ? node.style.width : 300;
           const nodeHeight = typeof node.style?.height === 'number' ? node.style.height : 200;
           
-          return {
+          // 計算行號和列號
+          const column = Math.floor(index / 5); // 每行最多5個節點
+          const row = index % 5;
+          
+          // 計算節點位置
+          const x = BASE_X + (column * (COLUMN_WIDTH + NODE_PADDING));
+          const y = BASE_Y + (row * (ROW_HEIGHT + NODE_PADDING));
+          
+          // 創建新的節點對象
+          const newNode = {
             ...node,
             position: {
-              x: ((node.position?.x || 0) + 20000) / 50,  // 調整坐標到可見範圍
-              y: ((node.position?.y || 0) + 15000) / 50
+              x: node.position?.x ? node.position.x : x,
+              y: node.position?.y ? node.position.y : y
             },
             style: {
               ...node.style,
-              width: Math.min(nodeWidth, 800),  // 限制最大寬度
-              height: Math.min(nodeHeight, 600),  // 限制最大高度
-              minHeight: 100,
+              width: Math.min(nodeWidth, 800),
+              height: Math.min(nodeHeight, 600),
+              minHeight: '100px',
+              minWidth: '200px',
+              padding: '10px',
+              backgroundColor: node.style?.backgroundColor || 'var(--background-primary)'
             }
           };
+          
+          return newNode;
         });
         
+        console.log('Adjusted nodes:', adjustedNodes);
         setNodes(adjustedNodes);
         
         // 設置邊緣
-        if (edges && edges.length > 0) {
-          console.log('Setting edges:', edges);
-          setEdges(edges);
+        if (loadedEdges && loadedEdges.length > 0) {
+          console.log('Setting edges:', loadedEdges);
+          setEdges(loadedEdges);
         }
       } catch (error) {
         console.error('Failed to load canvas data:', error);
@@ -111,19 +133,89 @@ function App() {
         onConnect={onConnect}
         nodeTypes={memoizedNodeTypes}
         edgeTypes={memoizedEdgeTypes}
-        fitView
         style={{
           backgroundColor: 'var(--background-primary)'
         }}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
+        fitViewOptions={{
+          padding: 0.2,  // 增加內邊距，讓視覺更舒適
+          includeHiddenNodes: false,
+          minZoom: 0.1,  // 允許更小的縮放級別
+          maxZoom: 4,    // 最大縮放級別
+          duration: 1000  // 動畫過渡時間
+        }}
+        minZoom={0.05}   // 允許縮小到 5%
+        maxZoom={4}     // 最大縮放到 400%
+        nodesDraggable={true}
+        nodesConnectable={true}
+        panOnScroll={true}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={true}
       >
         <Background 
-          color="var(--background-modifier-border)" 
-          gap={16} 
+          gap={32}  // 增大網格間距
+          size={1}  // 減小網格線粗細
           style={{
-            backgroundColor: 'var(--background-primary)'
+            backgroundColor: 'var(--background-primary)',
           }}
+          variant={'dots' as const}  // 明確指定為字面量類型
+          color="var(--background-modifier-border)"
+          className="canvas-background"
         />
+        {/* 添加自定義樣式來優化網格外觀 */}
+        <style>
+          {`
+            .react-flow__background {
+              background-color: var(--background-primary) !important;
+            }
+            .react-flow__background-dots {
+              stroke: var(--background-modifier-border) !important;
+              stroke-width: 1px !important;
+            }
+            
+            /* 優化卡片樣式 */
+            .react-flow__node {
+              background: var(--background-primary);
+              border: 1px solid var(--background-modifier-border);
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              transition: box-shadow 0.2s ease, border-color 0.2s ease;
+            }
+            
+            .react-flow__node:hover {
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+              border-color: var(--interactive-accent);
+            }
+            
+            /* 優化連接線樣式 */
+            .react-flow__edge-path {
+              stroke: var(--background-modifier-border);
+              stroke-width: 2px;
+            }
+            
+            .react-flow__edge.selected .react-flow__edge-path {
+              stroke: var(--interactive-accent);
+            }
+            
+            /* 優化控制欄樣式 */
+            .react-flow__controls {
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+              border: 1px solid var(--background-modifier-border);
+              background: var(--background-primary);
+            }
+            
+            .react-flow__controls-button {
+              background: var(--background-primary);
+              border-bottom: 1px solid var(--background-modifier-border);
+              color: var(--text-normal);
+            }
+            
+            .react-flow__controls-button:hover {
+              background: var(--background-modifier-hover);
+            }
+          `}
+        </style>
         <Controls 
           style={{ 
             backgroundColor: 'var(--background-secondary)',
@@ -132,12 +224,31 @@ function App() {
           }} 
         />
         <MiniMap 
-          style={{ 
-            backgroundColor: 'var(--background-secondary)',
-            border: '1px solid var(--background-modifier-border)',
-            borderRadius: 'var(--radius-m)',
+          nodeColor={(n) => {
+            if (n.type === 'input') return 'var(--interactive-accent)';
+            if (n.type === 'output') return 'var(--text-error)';
+            if (n.type === 'default') return 'var(--background-modifier-border)';
+            return 'var(--text-muted)';
           }}
-          nodeColor="var(--text-muted)"
+          nodeBorderRadius={4}
+          nodeStrokeWidth={1}
+          nodeStrokeColor="var(--background-modifier-border)"
+          maskColor="rgba(0, 0, 0, 0.2)"
+          style={{
+            backgroundColor: 'var(--background-primary)',
+            border: '1px solid var(--background-modifier-border)',
+            borderRadius: '4px',
+            opacity: 0.9,
+            transition: 'opacity 0.2s ease',
+            transform: 'scale(0.8)',
+            transformOrigin: 'bottom right',
+            margin: '0 8px 8px 0'
+          }}
+          className="minimap"
+          zoomable
+          pannable
+          zoomStep={0.5}
+          position="bottom-right"
         />
       </ReactFlow>
     </div>
